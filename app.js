@@ -5,6 +5,7 @@ const minRadius = 5;
 const minAge = -10;
 const circles = [];
 
+let textIntro = 300;
 let last = 0;
 let canvas;
 let ctx;
@@ -86,6 +87,17 @@ function update(delta) {
 function render() {
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, width, height);
+
+  if (textIntro > 0) {
+    ctx.font = '48px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(100, textIntro) / 100})`;
+
+    ctx.fillText('Welcome to bubble fun!', width / 2, height / 2);
+    ctx.fillText('Tap around to make bubbles :)', width / 2, height / 2 + 68);
+
+    textIntro--;
+  }
 
   ctx.lineWidth = circleWidth;
 
