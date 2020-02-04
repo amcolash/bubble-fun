@@ -89,12 +89,13 @@ function render() {
   ctx.fillRect(0, 0, width, height);
 
   if (textIntro > 0) {
-    ctx.font = '48px sans-serif';
+    const size = Math.min(64, width / 20);
+    ctx.font = `${size}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(100, textIntro) / 100})`;
 
     ctx.fillText('Welcome to bubble fun!', width / 2, height / 2);
-    ctx.fillText('Tap around to make bubbles :)', width / 2, height / 2 + 68);
+    ctx.fillText('Tap around to make bubbles :)', width / 2, height / 2 + size * 1.5);
 
     textIntro--;
   }
