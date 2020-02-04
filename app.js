@@ -6,7 +6,7 @@ const minAge = -10;
 const circles = [];
 
 let textIntro = 300;
-let last = 0;
+let lastUpdate = 0;
 let canvas;
 let ctx;
 let width;
@@ -37,10 +37,10 @@ window.oncontextmenu = function(e) {
 };
 
 function loop(timestamp) {
-  if (timestamp > last + 16) {
-    update(timestamp - last);
+  if (timestamp > lastUpdate + 16) {
+    update(timestamp - lastUpdate);
     render();
-    last = timestamp;
+    lastUpdate = timestamp;
   }
 
   window.requestAnimationFrame(loop);
