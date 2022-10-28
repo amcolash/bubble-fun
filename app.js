@@ -4,6 +4,7 @@ const speed = 2;
 const minRadius = 5;
 const minAge = -10;
 const circles = [];
+const toAdd = [];
 
 let textIntro = 300;
 let lastUpdate = 0;
@@ -22,14 +23,12 @@ window.onload = function() {
 };
 
 window.onpointerdown = function(e) {
-  const circle = createCircle(e.clientX, e.clientY);
+  toAdd.push(createCircle(e.clientX, e.clientY));
+};
 
-  let ignore = false;
-  circles.forEach(c => {
-    if (this.isTouching(c, circle)) ignore = true;
-  });
-
-  if (!ignore) circles.push(circle);
+window.onpointermove = function(e) {
+  if (e.pointerType === 'mouse') return;
+  toAdd.push(createCircle(e.clientX, e.clientY));
 };
 
 window.oncontextmenu = function(e) {
@@ -82,6 +81,12 @@ function update(delta) {
     // Remove if it gets old
     if (c.age < minAge) circles.splice(i, 1);
   });
+
+  // Add all circles on the update loop instead of event based, clear after
+  toAdd.forEach(c => {
+    trySpawn(c);
+  });
+  toAdd.splice(0, toAdd.length);
 }
 
 function render() {
@@ -116,6 +121,25 @@ function render() {
   });
 }
 
+function trySpawn(circle) {
+  // Set a slightly larger radius to try and add in some crowd control
+  const initialRadius = circle.r;
+  circle.r *= 3;
+
+  let canSpawn = true;
+  circles.forEach(c => {
+    const distance = dist(circle, c);
+    const isInside = distance <= circle.r + c.r;
+
+    if (isInside && c.r <= circle.r) canSpawn = false;
+  });
+
+  if (canSpawn) {
+    circle.r = initialRadius;
+    circles.push(circle);
+  }
+}
+
 function createCircle(x, y) {
   if (!x) x = width / 2;
   if (!y) y = height / 2;
@@ -124,7 +148,7 @@ function createCircle(x, y) {
 }
 
 function isTouching(c1, c2) {
-  const distance = dist(c1.x, c2.x, c1.y, c2.y);
+  const distance = dist(c1, c2);
 
   if (distance > c1.r + c2.r) return false;
   if (distance <= Math.abs(c1.r - c2.r)) return false;
@@ -133,6 +157,16 @@ function isTouching(c1, c2) {
 }
 
 function dist(x1, x2, y1, y2) {
+  if (x1.x && x2.x) {
+    const c1 = x1;
+    const c2 = x2;
+
+    x1 = c1.x;
+    x2 = c2.x;
+    y1 = c1.y;
+    y2 = c2.y;
+  }
+
   return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
